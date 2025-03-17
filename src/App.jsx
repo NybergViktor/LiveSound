@@ -1,31 +1,32 @@
 import { useEffect, useRef, useState } from "react";
+import "./App.css"
 
-const SIGNAL_SERVER = "ws://localhost:3001"; // WebSocket-server
-const userId = Math.random().toString(36).substr(2, 9); // Genererar ett unikt ID
+const SIGNAL_SERVER = "ws://localhost:3001"; 
+const userId = Math.random().toString(36).substr(2, 9); // Generate unique ID
 
 export default function App() {
   const [isSender, setIsSender] = useState(null);
   const [connected, setConnected] = useState(false);
   const [volume, setVolume] = useState(0);
-  const peerConnection = useRef(null); // Startar som null
+  const peerConnection = useRef(null);
   const socket = useRef(null);
   const localStream = useRef(null);
   const audioRef = useRef(null);
 
   useEffect(() => {
-    // ✅ Kontrollera att vi inte skapar flera PeerConnections
+    // Check that we do not create more PeerConnections
     if (!peerConnection.current) {
-      console.log("✅ Skapar ny PeerConnection...");
+      console.log("Creating new PeerConnection...");
       peerConnection.current = new RTCPeerConnection();
     } else {
-      console.warn("⚠️ PeerConnection redan skapad!");
+      console.warn("PeerConnection already created!");
     }
 
     if (!socket.current) {
       socket.current = new WebSocket(SIGNAL_SERVER);
 
       socket.current.onopen = () => {
-        console.log("✅ WebSocket-anslutning öppen!");
+        console.log("WebSocket-connection open!");
         socket.current.send(JSON.stringify({ type: "register", id: userId }));
       };
 
@@ -65,7 +66,7 @@ export default function App() {
     };
 
     return () => {
-      console.log("🔴 Stänger PeerConnection...");
+      console.log("Closes PeerConnection...");
       if (peerConnection.current) {
         peerConnection.current.close();
         peerConnection.current = null;
@@ -77,7 +78,7 @@ export default function App() {
     if (socket.current && socket.current.readyState === WebSocket.OPEN) {
       socket.current.send(JSON.stringify({ type: "signal", target, signal }));
     } else {
-      console.warn("WebSocket inte redo, väntar...");
+      console.warn("WebSocket not ready, waiting...");
       setTimeout(() => sendSignal(target, signal), 100);
     }
   };
@@ -92,12 +93,12 @@ export default function App() {
 
       if (!audioDevice) {
         alert(
-          "❌ Ingen systemljudkälla hittades! Se till att 'VB-Audio Virtual Cable' är aktiverat."
+          " No Audio-source found! Activate 'VB-Audio Virtual Cable'."
         );
         return;
       }
 
-      console.log("🎤 Använder ljudkälla:", audioDevice);
+      console.log("Using Audio-source:", audioDevice);
 
       localStream.current = await navigator.mediaDevices.getUserMedia({
         audio: {
@@ -135,7 +136,7 @@ export default function App() {
 
       setConnected(true);
     } catch (error) {
-      console.error("❌ Fel vid åtkomst av systemljud:", error);
+      console.error("Cannot acces system audio-device:", error);
     }
   };
 
@@ -152,14 +153,16 @@ export default function App() {
           <button
             onClick={() => setIsSender(true)}
             className="p-2 bg-blue-500 text-white rounded"
+            id="stream"
           >
-            Jag vill sända ljud
+            Stream
           </button>
           <button
             onClick={() => setIsSender(false)}
             className="p-2 bg-green-500 text-white rounded ml-4"
+            id="listen"
           >
-            Jag vill lyssna
+            Listen
           </button>
         </div>
       ) : isSender ? (
@@ -169,12 +172,12 @@ export default function App() {
               onClick={startStreaming}
               className="p-2 bg-red-500 text-white rounded"
             >
-              Starta sändning
+              Start stream
             </button>
           ) : (
             <div>
-              <p>Sändning pågår...</p>
-              <p>🔊 Ljudnivå: {volume.toFixed(2)} dB</p>
+              <p>Streaming session ongoing...</p>
+              <p>Sound level: {volume.toFixed(2)} dB</p>
             </div>
           )}
         </div>
@@ -185,7 +188,7 @@ export default function App() {
               onClick={startListening}
               className="p-2 bg-green-500 text-white rounded"
             >
-              Anslut och lyssna
+              Connect And Listen
             </button>
           ) : (
             <audio ref={audioRef} autoPlay controls className="mt-2" />

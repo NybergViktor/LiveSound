@@ -30,4 +30,4 @@ wss.on("connection", (ws) => {
   });
 });
 
-console.log("✅ WebSocket-server körs på ws://localhost:3001");
+console.log("WebSocket-server runs!");
