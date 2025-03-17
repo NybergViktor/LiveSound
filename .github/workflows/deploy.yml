@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Körs vid push till `main`-grenen
+      - main # Körs vid push till `main`-grenen
 
 permissions:
   contents: read
@@ -29,5 +29,5 @@ jobs:
       - name: 🚀 Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          branch: gh-pages
+          branch: main
           folder: dist
