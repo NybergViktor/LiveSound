@@ -1,9 +1,9 @@
-name: Deploy to GitHub Pages
+name: 🚀 Deploy React/Vite to GitHub Pages
 
 on:
   push:
     branches:
-      - main # Körs vid push till `main`-grenen
+      - main # Kör varje gång du pushar till `main`
 
 permissions:
   contents: read
@@ -29,5 +29,5 @@ jobs:
       - name: 🚀 Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          branch: main
+          branch: gh-pages
           folder: dist
