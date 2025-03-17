@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const SIGNAL_SERVER = "ws://localhost:3001"; // WebSocket-server
+const SIGNAL_SERVER = "ws://100.86.87.121"; // WebSocket-server
 const userId = Math.random().toString(36).substr(2, 9); // Genererar ett unikt ID
 
 export default function App() {
@@ -33,14 +33,20 @@ export default function App() {
         const data = JSON.parse(message.data);
         if (data.type === "signal") {
           if (data.signal.type === "offer") {
-            await peerConnection.current.setRemoteDescription(new RTCSessionDescription(data.signal));
+            await peerConnection.current.setRemoteDescription(
+              new RTCSessionDescription(data.signal)
+            );
             const answer = await peerConnection.current.createAnswer();
             await peerConnection.current.setLocalDescription(answer);
             sendSignal("receiver", answer);
           } else if (data.signal.type === "answer") {
-            await peerConnection.current.setRemoteDescription(new RTCSessionDescription(data.signal));
+            await peerConnection.current.setRemoteDescription(
+              new RTCSessionDescription(data.signal)
+            );
           } else if (data.signal.type === "candidate") {
-            await peerConnection.current.addIceCandidate(new RTCIceCandidate(data.signal));
+            await peerConnection.current.addIceCandidate(
+              new RTCIceCandidate(data.signal)
+            );
           }
         }
       };
@@ -79,24 +85,33 @@ export default function App() {
   const startStreaming = async () => {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
-      const audioDevice = devices.find(device => 
-        device.label.includes("CABLE Output") && device.kind === "audioinput"
+      const audioDevice = devices.find(
+        (device) =>
+          device.label.includes("CABLE Output") && device.kind === "audioinput"
       );
 
       if (!audioDevice) {
-        alert("❌ Ingen systemljudkälla hittades! Se till att 'VB-Audio Virtual Cable' är aktiverat.");
+        alert(
+          "❌ Ingen systemljudkälla hittades! Se till att 'VB-Audio Virtual Cable' är aktiverat."
+        );
         return;
       }
 
       console.log("🎤 Använder ljudkälla:", audioDevice);
 
       localStream.current = await navigator.mediaDevices.getUserMedia({
-        audio: { deviceId: audioDevice.deviceId ? { exact: audioDevice.deviceId } : undefined }
+        audio: {
+          deviceId: audioDevice.deviceId
+            ? { exact: audioDevice.deviceId }
+            : undefined,
+        },
       });
 
-      localStream.current.getTracks().forEach(track => 
-        peerConnection.current.addTrack(track, localStream.current)
-      );
+      localStream.current
+        .getTracks()
+        .forEach((track) =>
+          peerConnection.current.addTrack(track, localStream.current)
+        );
 
       const audioContext = new AudioContext();
       const analyser = audioContext.createAnalyser();
@@ -134,17 +149,26 @@ export default function App() {
 
       {isSender === null ? (
         <div>
-          <button onClick={() => setIsSender(true)} className="p-2 bg-blue-500 text-white rounded">
+          <button
+            onClick={() => setIsSender(true)}
+            className="p-2 bg-blue-500 text-white rounded"
+          >
             Jag vill sända ljud
           </button>
-          <button onClick={() => setIsSender(false)} className="p-2 bg-green-500 text-white rounded ml-4">
+          <button
+            onClick={() => setIsSender(false)}
+            className="p-2 bg-green-500 text-white rounded ml-4"
+          >
             Jag vill lyssna
           </button>
         </div>
       ) : isSender ? (
         <div>
           {!connected ? (
-            <button onClick={startStreaming} className="p-2 bg-red-500 text-white rounded">
+            <button
+              onClick={startStreaming}
+              className="p-2 bg-red-500 text-white rounded"
+            >
               Starta sändning
             </button>
           ) : (
@@ -157,7 +181,10 @@ export default function App() {
       ) : (
         <div>
           {!connected ? (
-            <button onClick={startListening} className="p-2 bg-green-500 text-white rounded">
+            <button
+              onClick={startListening}
+              className="p-2 bg-green-500 text-white rounded"
+            >
               Anslut och lyssna
             </button>
           ) : (
