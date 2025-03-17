@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const SIGNAL_SERVER = "wss://100.86.87.121:3001"; // WebSocket-server
+const SIGNAL_SERVER = "ws://localhost:3001"; // WebSocket-server
 const userId = Math.random().toString(36).substr(2, 9); // Genererar ett unikt ID
 
 export default function App() {
